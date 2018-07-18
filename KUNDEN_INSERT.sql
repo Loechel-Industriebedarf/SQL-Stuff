@@ -20,6 +20,7 @@ BEGIN
 	SELECT @Kundengruppe = INSERTED.GRUPPE       
        FROM INSERTED
 
+	   /* Wenn die Kundengruppe NW-Shop ist, Gesamtsperre aufheben */
 	   IF @Kundengruppe = '400'
-			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0
+			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0 WHERE KUNDENNR = @Kundennr
 END
