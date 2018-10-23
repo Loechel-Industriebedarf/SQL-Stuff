@@ -26,8 +26,8 @@ FROM            dbo.ARTIKEL LEFT OUTER JOIN
 					 dbo.LAGER ON dbo.ARTIKEL.ARTIKELNR = dbo.LAGER.ARTIKELNR LEFT OUTER JOIN
 					 dbo.ExternalArticleID ON dbo.ARTIKEL.ARTIKELNR = dbo.ExternalArticleID.ArticleID
 WHERE			(dbo.ARTIKEL.STATUS = 1)		
-				AND (dbo.ARTIKEL.KEININTERNET IS NULL) 
-				AND (dbo.ARTIKEL.NoParcelService IS NULL)
+				AND (dbo.ARTIKEL.KEININTERNET IS NULL OR dbo.ARTIKEL.KEININTERNET = 0) 
+				AND (dbo.ARTIKEL.NoParcelService IS NULL OR dbo.ARTIKEL.NoParcelService = 0)
 				AND (dbo.ARTIKEL.GRUPPE <> 'A001')
 				AND (dbo.ARTIKEL.VK3 > 0)
 				
