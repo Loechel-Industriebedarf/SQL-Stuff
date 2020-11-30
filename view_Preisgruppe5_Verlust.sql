@@ -12,10 +12,10 @@ INNER JOIN
 	(SELECT TOP (2147483647) 
 		ARTIKELNR, 
 		CASE WHEN KALKBASIS = 2 THEN KEK ELSE LEK END AS KEKLEK, 
-		-- When the calculation multiplier is greater than 1,05 OR KALKBASIS is KEK (0) the multiplier should be used
-		-- If not: Use a logic based on the articles price
-		CASE WHEN (CAST(REPLACE(ARTIKEL_1.P116LI_RotationMin, ',', '.') AS float) > 1.05) OR (KALKBASIS = 0 AND ARTIKEL_1.P116LI_RotationMin IS NOT NULL) THEN 
-			CAST(REPLACE(ARTIKEL_1.P116LI_RotationMin, ',', '.') AS float) 
+		-- If P116LI_TeethCount exists, use its value
+		-- If it does not exist, use a diffent logic
+		CASE WHEN (ARTIKEL_1.P116LI_TeethCount IS NOT NULL) THEN 
+			CAST(REPLACE(ARTIKEL_1.P116LI_TeethCount, ',', '.') AS float) 
 		ELSE 
 			CASE WHEN ARTIKEL_1.KEK > 200 
 				THEN 1.05 
