@@ -15,6 +15,8 @@ BEGIN
 	DECLARE @Kundengruppe varchar(8)
 	DECLARE @Zahlungsnr smallint
 	DECLARE @PrivKunde smallint
+	DECLARE @LKZ varchar(4)
+	DECLARE @Land varchar(40)
 
 	SELECT @Kundennr = INSERTED.KUNDENNR       
        FROM INSERTED
@@ -28,6 +30,12 @@ BEGIN
 	SELECT @PrivKunde = INSERTED.PRIVATKUNDE
 	   FROM INSERTED
 
+	SELECT @LKZ = INSERTED.LAENDERKZ
+	   FROM INSERTED
+
+	SELECT @Land = INSERTED.LAND
+	   FROM INSERTED
+
 	   /* Wenn die Kundengruppe NW-Shop ist, Gesamtsperre aufheben */
 	   IF @Kundengruppe = '400'
 			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0 WHERE KUNDENNR = @Kundennr
@@ -39,4 +47,8 @@ BEGIN
 		/* Privatkunde entfernen */
 		IF @PrivKunde = '1'
 			UPDATE[dbo].[KUNDEN] SET PRIVATKUNDE = 0 WHERE KUNDENNR = @Kundennr
+
+		/* Steuern ändern */
+		If @LKZ = 'AT' OR @Land = 'Österreich'
+			UPDATE[dbo].[KUNDEN] SET MWSTKZ = 3 WHERE KUNDENNR = @Kundennr
 END
