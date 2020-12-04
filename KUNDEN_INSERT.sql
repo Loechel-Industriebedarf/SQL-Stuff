@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 08.08.2018 12:54:20 ******/
+/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 04.12.2020 10:43:19 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -17,6 +17,7 @@ BEGIN
 	DECLARE @PrivKunde smallint
 	DECLARE @LKZ varchar(4)
 	DECLARE @Land varchar(40)
+	DECLARE @Ust varchar(40)
 
 	SELECT @Kundennr = INSERTED.KUNDENNR       
        FROM INSERTED
@@ -36,6 +37,9 @@ BEGIN
 	SELECT @Land = INSERTED.LAND
 	   FROM INSERTED
 
+	SELECT @Ust = INSERTED.IDENTNUMMER
+	   FROM INSERTED
+
 	   /* Wenn die Kundengruppe NW-Shop ist, Gesamtsperre aufheben */
 	   IF @Kundengruppe = '400'
 			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0 WHERE KUNDENNR = @Kundennr
@@ -49,6 +53,9 @@ BEGIN
 			UPDATE[dbo].[KUNDEN] SET PRIVATKUNDE = 0 WHERE KUNDENNR = @Kundennr
 
 		/* Steuern ändern */
-		If @LKZ = 'AT' OR @Land = 'Österreich'
-			UPDATE[dbo].[KUNDEN] SET MWSTKZ = 3 WHERE KUNDENNR = @Kundennr
+		If (@LKZ = 'AT' OR @Land = 'Österreich')
+			If (@Ust = '' OR  @Ust is null)
+				UPDATE[dbo].[KUNDEN] SET MWSTKZ = 3 WHERE KUNDENNR = @Kundennr
+			Else
+				UPDATE[dbo].[KUNDEN] SET MWSTKZ = 0 WHERE KUNDENNR = @Kundennr
 END
