@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 09.12.2020 08:32:19 ******/
+/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 09.12.2020 09:11:39 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -23,6 +23,6 @@ BEGIN
 	Select @Beleg = INSERTED.BELEGNR
 		FROM INSERTED
 
-	IF @CodeNeu LIKE '%@%' OR @CodeAlt LIKE ''
+	IF @CodeNeu LIKE '%@%' AND ( @CodeAlt LIKE '' OR @CodeAlt is null)
 			UPDATE [dbo].[AUFTRAGSKOPF] SET CODE3 = @CodeNeu WHERE BELEGNR = @Beleg
 END
