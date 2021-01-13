@@ -1,7 +1,17 @@
 -- Select all articles
 -- cte.CALC -> Price calculation for the article
 SELECT TOP (2147483647) 
-	dbo.View_VK5Preise.ARTIKELNR, cte.KEKLEK * cte.CALC AS VK5Neu, dbo.View_VK5Preise.VK5 AS VK5Alt, cte.KEKLEK, dbo.ARTIKEL.KEK, dbo.ARTIKEL.LEK, dbo.ARTIKEL.KALKBASIS, cte.CALC, dbo.ARTIKEL.MENGEV, dbo.ARTIKEL.VKPRO
+	dbo.View_VK5Preise.ARTIKELNR, 
+	-- Rounds last digit after comma to 9
+	CAST(cte.KEKLEK * cte.CALC as decimal(18,1)) + 0.09 AS VK5Neu, 
+	dbo.View_VK5Preise.VK5 AS VK5Alt, 
+	cte.KEKLEK, 
+	dbo.ARTIKEL.KEK, 
+	dbo.ARTIKEL.LEK, 
+	dbo.ARTIKEL.KALKBASIS, 
+	cte.CALC, 
+	dbo.ARTIKEL.MENGEV, 
+	dbo.ARTIKEL.VKPRO
 -- VK5Preise is another view, that just reads the current VK5 prices
 FROM 
 	dbo.View_VK5Preise 
@@ -37,7 +47,9 @@ INNER JOIN
 		AS CALC
 	FROM dbo.ARTIKEL AS ARTIKEL_1) AS cte ON dbo.View_VK5Preise.ARTIKELNR = cte.ARTIKELNR 
 	-- Filter articles with less than 1 cent difference
-	AND (cte.KEKLEK * cte.CALC < dbo.View_VK5Preise.VK5 - 0.01 OR cte.KEKLEK * cte.CALC > dbo.View_VK5Preise.VK5 + 0.01) 
+	AND 
+		(CAST(cte.KEKLEK * cte.CALC as decimal(18,1)) + 0.09 < dbo.View_VK5Preise.VK5 - 0.01 OR 
+		CAST(cte.KEKLEK * cte.CALC as decimal(18,1)) + 0.09 > dbo.View_VK5Preise.VK5 + 0.01) 
 	-- Filter articles with specialpricememo
 	AND dbo.ARTIKEL.P53_SpecialPriceMemo IS NULL 
 	-- Filter articles that should not be sold
