@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 09.12.2020 09:11:39 ******/
+/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 26.01.2021 13:40:02 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15,6 +15,7 @@ BEGIN
 	DECLARE @CodeAlt varchar(40)
 	DECLARE @CodeNeu varchar(40)
 	DECLARE @Beleg decimal(15, 0)
+	DECLARE @Belegart varchar(4)
 
 	SELECT @CodeAlt = INSERTED.CODE3
 		FROM INSERTED
@@ -22,7 +23,9 @@ BEGIN
 		FROM INSERTED
 	Select @Beleg = INSERTED.BELEGNR
 		FROM INSERTED
+	Select @Belegart = INSERTED.BELEGART
+		FROM INSERTED
 
-	IF @CodeNeu LIKE '%@%' AND ( @CodeAlt LIKE '' OR @CodeAlt is null)
+	IF @CodeNeu LIKE '%@%' AND (@CodeAlt LIKE '' OR @CodeAlt is null) AND @Belegart != '7'
 			UPDATE [dbo].[AUFTRAGSKOPF] SET CODE3 = @CodeNeu WHERE BELEGNR = @Beleg
 END

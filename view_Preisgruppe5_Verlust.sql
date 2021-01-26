@@ -3,11 +3,12 @@
 SELECT TOP (2147483647) 
 	dbo.View_VK5Preise.ARTIKELNR, 
 	-- Rounds last digit after comma to 9
-	CAST(cte.KEKLEK * cte.CALC as decimal(18,1)) + 0.09 AS VK5Neu, 
+	ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 AS VK5Neu, 
 	dbo.View_VK5Preise.VK5 AS VK5Alt, 
 	cte.KEKLEK, 
 	dbo.ARTIKEL.KEK, 
 	dbo.ARTIKEL.LEK, 
+	dbo.ARTIKEL.VK1, 
 	dbo.ARTIKEL.KALKBASIS, 
 	cte.CALC, 
 	dbo.ARTIKEL.MENGEV, 
@@ -21,7 +22,13 @@ INNER JOIN
 INNER JOIN
 	(SELECT TOP (2147483647) 
 		ARTIKELNR, 
-		CASE WHEN KALKBASIS = 2 THEN KEK ELSE LEK END AS KEKLEK, 
+		CASE WHEN ARTIKEL_1.P116LI_TeethCount LIKE '%-%' THEN
+			VK1 
+		ELSE
+			CASE WHEN KALKBASIS = 2 THEN KEK ELSE LEK END 
+		END
+		AS KEKLEK, 
+		
 		-- If P116LI_TeethCount exists, use its value
 		-- If it does not exist, use a diffent logic
 		CASE WHEN (ARTIKEL_1.P116LI_TeethCount IS NOT NULL) THEN 
@@ -48,8 +55,8 @@ INNER JOIN
 	FROM dbo.ARTIKEL AS ARTIKEL_1) AS cte ON dbo.View_VK5Preise.ARTIKELNR = cte.ARTIKELNR 
 	-- Filter articles with less than 1 cent difference
 	AND 
-		(CAST(cte.KEKLEK * cte.CALC as decimal(18,1)) + 0.09 < dbo.View_VK5Preise.VK5 - 0.01 OR 
-		CAST(cte.KEKLEK * cte.CALC as decimal(18,1)) + 0.09 > dbo.View_VK5Preise.VK5 + 0.01) 
+		(ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 < dbo.View_VK5Preise.VK5 - 0.01 OR 
+		ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 > dbo.View_VK5Preise.VK5 + 0.01) 
 	-- Filter articles with specialpricememo
 	AND dbo.ARTIKEL.P53_SpecialPriceMemo IS NULL 
 	-- Filter articles that should not be sold
