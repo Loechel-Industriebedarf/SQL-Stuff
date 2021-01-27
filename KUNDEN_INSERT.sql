@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 16.12.2020 08:48:03 ******/
+/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 27.01.2021 14:02:21 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -46,6 +46,7 @@ BEGIN
 	   BEGIN
 			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0 WHERE KUNDENNR = @Kundennr
 			UPDATE [dbo].[KUNDEN] SET CompleteDeliveryType = 1 WHERE KUNDENNR = @Kundennr
+			UPDATE [dbo].[KUNDEN] SET NVH_PrintDeliveryDate = 2 WHERE KUNDENNR = @Kundennr
 		END
 
 		/* Wenn die Zahlungsnummer leer ist, Zahlungsnummer auf Vorauszahlung setzen */
