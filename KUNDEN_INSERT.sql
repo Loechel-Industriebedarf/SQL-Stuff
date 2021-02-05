@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 27.01.2021 14:02:21 ******/
+/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 05.02.2021 12:21:44 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -18,6 +18,7 @@ BEGIN
 	DECLARE @LKZ varchar(4)
 	DECLARE @Land varchar(40)
 	DECLARE @Ust varchar(40)
+	DECLARE @VA smallint
 
 	SELECT @Kundennr = INSERTED.KUNDENNR       
        FROM INSERTED
@@ -40,14 +41,19 @@ BEGIN
 	SELECT @Ust = INSERTED.IDENTNUMMER
 	   FROM INSERTED
 
+	 SELECT @VA = INSERTED.VANUMMER
+	   FROM INSERTED
+
 	   /* Wenn die Kundengruppe NW-Shop ist, Gesamtsperre aufheben */
 	   /* Weiters wird der Kunde auf "Komplettliefern" gesetzt */
 	   IF @Kundengruppe = '400'
 	   BEGIN
-			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0 WHERE KUNDENNR = @Kundennr
-			UPDATE [dbo].[KUNDEN] SET CompleteDeliveryType = 1 WHERE KUNDENNR = @Kundennr
-			UPDATE [dbo].[KUNDEN] SET NVH_PrintDeliveryDate = 2 WHERE KUNDENNR = @Kundennr
+			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0, CompleteDeliveryType = 1, NVH_PrintDeliveryDate = 2 WHERE KUNDENNR = @Kundennr
 		END
+
+		/* Wenn die Versandnummer leer ist, Versandnummer auf DHL/DPD setzen */
+		IF @VA IS NULL
+			UPDATE [dbo].[KUNDEN] SET VANUMMER = 18 WHERE KUNDENNR = @Kundennr
 
 		/* Wenn die Zahlungsnummer leer ist, Zahlungsnummer auf Vorauszahlung setzen */
 		IF @Zahlungsnr IS NULL
