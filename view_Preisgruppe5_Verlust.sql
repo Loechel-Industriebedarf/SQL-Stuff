@@ -13,7 +13,8 @@ SELECT TOP (2147483647)
 	cte.CALC, 
 	dbo.ARTIKEL.MENGEV, 
 	dbo.ARTIKEL.VKPRO,
-	dbo.View_VK5Preise.CLERKID
+	dbo.View_VK5Preise.CLERKID,
+	dbo.ARTIKEL.P53_SpecialPriceMemo
 -- VK5Preise is another view, that just reads the current VK5 prices
 FROM 
 	dbo.View_VK5Preise 
@@ -63,11 +64,12 @@ INNER JOIN
 	AND 
 		(ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 < dbo.View_VK5Preise.VK5 - 0.01 OR 
 		ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 > dbo.View_VK5Preise.VK5 + 0.01) 
-	-- Filter articles with specialpricememo
-	AND dbo.ARTIKEL.P53_SpecialPriceMemo IS NULL 
+	-- Filter articles with specialpricememo, when the price is high enought
+	AND (dbo.ARTIKEL.P53_SpecialPriceMemo IS NULL OR cte.KEKLEK > dbo.View_VK5Preise.VK5)
+	-- Don't change manually changed prices, when the price is high enought
+	AND (dbo.View_VK5Preise.CLERKID LIKE 'MRI' OR cte.KEKLEK > dbo.View_VK5Preise.VK5)
 	-- Filter articles that should not be sold
 	AND (dbo.ARTIKEL.P116LI_NoEcommerce5 IS NULL OR dbo.ARTIKEL.P116LI_NoEcommerce5 = 0) 
 	-- Filter deleted articles
 	AND (dbo.ARTIKEL.GELOESCHT IS NULL OR dbo.ARTIKEL.GELOESCHT = 0)
-	-- Don't change manually changed prices
-	AND dbo.View_VK5Preise.CLERKID LIKE 'MRI'
+	
