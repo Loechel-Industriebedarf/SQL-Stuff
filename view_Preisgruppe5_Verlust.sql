@@ -12,7 +12,8 @@ SELECT TOP (2147483647)
 	dbo.ARTIKEL.KALKBASIS, 
 	cte.CALC, 
 	dbo.ARTIKEL.MENGEV, 
-	dbo.ARTIKEL.VKPRO
+	dbo.ARTIKEL.VKPRO,
+	dbo.View_VK5Preise.CLERKID
 -- VK5Preise is another view, that just reads the current VK5 prices
 FROM 
 	dbo.View_VK5Preise 
@@ -68,3 +69,5 @@ INNER JOIN
 	AND (dbo.ARTIKEL.P116LI_NoEcommerce5 IS NULL OR dbo.ARTIKEL.P116LI_NoEcommerce5 = 0) 
 	-- Filter deleted articles
 	AND (dbo.ARTIKEL.GELOESCHT IS NULL OR dbo.ARTIKEL.GELOESCHT = 0)
+	-- Don't change manually changed prices
+	AND dbo.View_VK5Preise.CLERKID LIKE 'MRI'
