@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 02.02.2021 14:01:07 ******/
+/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 05.05.2021 09:13:18 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -12,8 +12,8 @@ ALTER TRIGGER [dbo].[AUFTRAGSKOPF_CODE3]
 AS 
 BEGIN
 	SET NOCOUNT ON;
-	DECLARE @CodeAlt varchar(40)
-	DECLARE @CodeNeu varchar(40)
+	DECLARE @CodeAlt varchar(200)
+	DECLARE @CodeNeu varchar(100)
 	DECLARE @Beleg decimal(15, 0)
 	DECLARE @Belegart varchar(4)
 
