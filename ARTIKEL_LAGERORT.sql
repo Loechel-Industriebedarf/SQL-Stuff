@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[ARTIKEL_LAGERORT]    Script Date: 20.10.2020 11:51:12 ******/
+/****** Object:  Trigger [dbo].[ARTIKEL_LAGERORT]    Script Date: 02.09.2021 08:55:25 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -15,7 +15,7 @@ BEGIN
 	DECLARE @Lagerort varchar(14)
 	DECLARE @Artikelnummer varchar(30)
 
-	SELECT @Lagerort = TRIM(SUBSTRING(INSERTED.P116LI_TempMax, 0, 9))
+	SELECT @Lagerort = TRIM(REPLACE(SUBSTRING(INSERTED.P116LI_TempMax, 0, 9), '+', ''))
 		FROM INSERTED
 	SELECT @Artikelnummer = INSERTED.ARTIKELNR
 		FROM INSERTED
