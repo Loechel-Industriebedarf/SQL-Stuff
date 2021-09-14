@@ -15,6 +15,9 @@ BEGIN
 	DECLARE @Lagerort varchar(14)
 	DECLARE @Artikelnummer varchar(30)
 
+	-- Erste 8 Zeichen auslesen
+	-- + Zeichen entfernen
+	-- Leerzeichen an Anfang und Ende entfernen
 	SELECT @Lagerort = TRIM(REPLACE(SUBSTRING(INSERTED.P116LI_TempMax, 0, 9), '+', ''))
 		FROM INSERTED
 	SELECT @Artikelnummer = INSERTED.ARTIKELNR
