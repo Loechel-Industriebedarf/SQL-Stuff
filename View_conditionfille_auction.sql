@@ -49,4 +49,4 @@ WHERE
 	-- No products with a special price
 	AND (dbo.SONDERPREIS.PREIS IS NULL)
 	-- Only storage 1
-	AND (dbo.LAGER.LAGERNR = 1)
+	AND (dbo.LAGER.LAGERNR = 1 OR dbo.LAGER.LAGERNR is null)
