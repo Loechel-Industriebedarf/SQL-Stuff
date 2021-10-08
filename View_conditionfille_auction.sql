@@ -48,3 +48,5 @@ WHERE
 	AND (dbo.ARTIKEL.VK3 > 0) 
 	-- No products with a special price
 	AND (dbo.SONDERPREIS.PREIS IS NULL)
+	-- Only storage 1
+	AND (dbo.LAGER.LAGERNR = 1)
