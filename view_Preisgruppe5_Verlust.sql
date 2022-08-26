@@ -3,7 +3,7 @@
 SELECT TOP (2147483647) 
 	dbo.View_VK5Preise.ARTIKELNR, 
 	-- Rounds last digit after comma to 9
-	CASE WHEN cte.KEKLEK < 1 THEN ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 ELSE 0 END AS VK5Neu, 
+	ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 AS VK5Neu, 
 	dbo.View_VK5Preise.VK5 AS VK5Alt, 
 	cte.KEKLEK, 
 	dbo.ARTIKEL.KEK, 
@@ -71,5 +71,7 @@ INNER JOIN
 	-- Filter articles that should not be sold
 	AND (dbo.ARTIKEL.P116LI_NoEcommerce5 IS NULL OR dbo.ARTIKEL.P116LI_NoEcommerce5 = 0) 
 	-- Filter deleted articles
-	AND (dbo.ARTIKEL.GELOESCHT IS NULL OR dbo.ARTIKEL.GELOESCHT = 0)
+	AND (dbo.ARTIKEL.GELOESCHT IS NULL OR dbo.ARTIKEL.GELOESCHT = 0) 
+	-- Filter articles with low KEK/LEK
+	AND (cte.KEKLEK > 1)
 	
