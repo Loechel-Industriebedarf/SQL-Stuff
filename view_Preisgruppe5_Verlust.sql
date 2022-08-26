@@ -3,7 +3,7 @@
 SELECT TOP (2147483647) 
 	dbo.View_VK5Preise.ARTIKELNR, 
 	-- Rounds last digit after comma to 9
-	ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 AS VK5Neu, 
+	CASE WHEN cte.KEKLEK < 1 THEN ABS(CAST(cte.KEKLEK * cte.CALC as decimal(18,1))) + 0.09 ELSE 0 END AS VK5Neu, 
 	dbo.View_VK5Preise.VK5 AS VK5Alt, 
 	cte.KEKLEK, 
 	dbo.ARTIKEL.KEK, 
