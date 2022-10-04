@@ -42,17 +42,17 @@ INNER JOIN
 			CAST(REPLACE(ARTIKEL_1.P116LI_TeethCount, ',', '.') AS float) 
 		ELSE
 			CASE WHEN ARTIKEL_1.MENGEV IS NOT NULL OR ARTIKEL_1.VKPRO > 1
-				THEN 1.05
+				THEN 1.06
 			ELSE
 				CASE WHEN ARTIKEL_1.KEK > 200 
-					THEN 1.05 
+					THEN 1.06 
 				ELSE 
 					CASE WHEN ARTIKEL_1.KEK > 100 
-						THEN 1.08 
+						THEN 1.09 
 					ELSE 
 						CASE WHEN ARTIKEL_1.KEK > 50 
-							THEN 1.1 
-						ELSE 1.15 
+							THEN 1.11 
+						ELSE 1.16 
 						END 
 					END 
 				END 
@@ -73,5 +73,5 @@ INNER JOIN
 	-- Filter deleted articles
 	AND (dbo.ARTIKEL.GELOESCHT IS NULL OR dbo.ARTIKEL.GELOESCHT = 0) 
 	-- Filter articles with low KEK/LEK
-	AND (cte.KEKLEK > 1)
+	AND (cte.KEKLEK > 0.5)
 	
