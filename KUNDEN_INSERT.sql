@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 05.02.2021 12:21:44 ******/
+/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 01.12.2023 12:53:50 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -46,9 +46,10 @@ BEGIN
 
 	   /* Wenn die Kundengruppe NW-Shop ist, Gesamtsperre aufheben */
 	   /* Weiters wird der Kunde auf "Komplettliefern" gesetzt */
+	   /* Weiters wird der Kunde auf "Druck L.Termin" -> KW gesetzt */
 	   IF @Kundengruppe = '400'
 	   BEGIN
-			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0, CompleteDeliveryType = 1, NVH_PrintDeliveryDate = 2 WHERE KUNDENNR = @Kundennr
+			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0, CompleteDeliveryType = 1, NVH_PrintDeliveryDate = 1 WHERE KUNDENNR = @Kundennr
 		END
 
 		/* Wenn die Versandnummer leer ist, Versandnummer auf DHL/DPD setzen */
@@ -64,9 +65,13 @@ BEGIN
 			UPDATE[dbo].[KUNDEN] SET PRIVATKUNDE = 0 WHERE KUNDENNR = @Kundennr
 
 		/* Steuern ändern */
+		/*
+		Obsolet seit 4.5
+
 		If (@LKZ = 'AT' OR @Land = 'Österreich')
 			If (@Ust = '' OR  @Ust is null)
 				UPDATE[dbo].[KUNDEN] SET MWSTKZ = 3 WHERE KUNDENNR = @Kundennr
 			Else
 				UPDATE[dbo].[KUNDEN] SET MWSTKZ = 0 WHERE KUNDENNR = @Kundennr
+		*/
 END
