@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 01.12.2023 12:53:50 ******/
+/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 02.01.2025 11:32:50 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -46,7 +46,7 @@ BEGIN
 
 	   /* Wenn die Kundengruppe NW-Shop ist, Gesamtsperre aufheben */
 	   /* Weiters wird der Kunde auf "Komplettliefern" gesetzt */
-	   /* Weiters wird der Kunde auf "Druck L.Termin" -> KW gesetzt */
+	   /* Weiters wird der Kunde auf "Druck L.Termin" -> Datum gesetzt */
 	   IF @Kundengruppe = '400'
 	   BEGIN
 			UPDATE [dbo].[KUNDEN] SET SPERRUNG = 0, CompleteDeliveryType = 1, NVH_PrintDeliveryDate = 1 WHERE KUNDENNR = @Kundennr
@@ -63,6 +63,9 @@ BEGIN
 		/* Privatkunde entfernen */
 		IF @PrivKunde = '1'
 			UPDATE[dbo].[KUNDEN] SET PRIVATKUNDE = 0 WHERE KUNDENNR = @Kundennr
+
+		/* ZUGFERD Aktivieren */
+		UPDATE [dbo].[KUNDEN] SET PDFSettingID='48654FDE-6D33-426B-B68D-DF4286C10579', PDFXMLMappingID='90', PDFVersion='2', UsePDFHandler='2' WHERE KUNDENNR = @Kundennr
 
 		/* Steuern ändern */
 		/*
