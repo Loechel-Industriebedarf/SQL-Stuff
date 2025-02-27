@@ -1,65 +1,37 @@
--- Select all articles
-SELECT TOP (100) PERCENT 
-	dbo.ARTIKEL.ARTIKELNR AS SUPPLIER_AID, 
+SELECT        TOP (100) PERCENT 
+	dbo.ARTIKEL.ARTIKELNR AS SUPPLIER_AID,
+	
 	-- Shipping time:
-	-- When stock is greater than 0, set time to 2
+	-- When stock is greater than 0, set time to 2 (determined via KALKBASIS JOB)
 	-- When shipping time is not set, set it to 10
-	CASE WHEN dbo.LAGER.BUCHBESTAND > 0 THEN 2 WHEN dbo.ARTIKEL.NUMFELD1 IS NULL THEN 10 ELSE CAST(dbo.ARTIKEL.NUMFELD1 AS INT) END AS DELIVERY_TIME, 
-	-- Use HoleSpacing as EAN, if EAN is not filled
-	CASE WHEN dbo.ARTIKEL.EAN IS NULL THEN dbo.ARTIKEL.P116LI_HoleSpacing ELSE EAN END AS EAN, 
+	CASE WHEN  KALKBASIS = 0 THEN 2 WHEN dbo.artikel.numfeld1 IS NULL THEN 10 ELSE CAST(dbo.artikel.numfeld1 AS INT) END AS DELIVERY_TIME, 
+	-- Use HoleSpacing as EAN, if EAN is not filled					 
+	CASE WHEN dbo.artikel.ean IS NULL THEN dbo.artikel.p116li_holespacing ELSE ean END AS EAN, 
+	-- Get first amount = 1*MENGEV or SWORDLENGTH
+	CASE WHEN dbo.artikel.p116li_swordlength IS NULL THEN CONVERT(DECIMAL(10, 0), 1 * CASE WHEN dbo.artikel.mengev IS NOT NULL THEN dbo.artikel.mengev ELSE 1 END) ELSE CONVERT(DECIMAL(10, 0), 1 * dbo.artikel.p116li_swordlength) END AS LOWER_BOUND1, 
+	-- +2 cents to fix low cost articles
+	CONVERT(DECIMAL(10,2), dbo.ARTIKEL.VK3 * 1.03 + 0.02) AS NET_CUSTOMER1,                     
+						 
+	CONVERT(DECIMAL(10,2), dbo.ARTIKEL.KEK * 1.05 + 0.02) AS NET_LIST1, 
+	-- Get second amount = 2*MENGEV or 2*SWORDLENGTH
+	CASE WHEN dbo.artikel.p116li_swordlength IS NULL THEN CONVERT(DECIMAL(10, 0), 2 * CASE WHEN dbo.artikel.mengev IS NOT NULL THEN dbo.artikel.mengev ELSE 1 END) ELSE CONVERT(DECIMAL(10, 0), 2 * dbo.artikel.p116li_swordlength) END AS LOWER_BOUND2, 
 	
-		-- Auction prices are only calculated, if we make more than 5% profit
+    CONVERT(DECIMAL(10,2), dbo.ARTIKEL.VK3 * 1.015 + 0.01) AS NET_CUSTOMER2, 
 	
-		-- Get first amount = 1
-		CASE WHEN dbo.ARTIKEL.P116LI_SwordLength IS NULL THEN
-		CONVERT(DECIMAL(10, 0), 1 * CASE WHEN dbo.ARTIKEL.MENGEV IS NOT NULL THEN dbo.ARTIKEL.MENGEV ELSE 1 END)
-		ELSE
-		CONVERT(DECIMAL(10, 0), 1 * dbo.ARTIKEL.P116LI_SwordLength)
-		END
-		AS LOWER_BOUND1,
-			-- Get first price = VK3
-			dbo.ARTIKEL.VK3 AS NET_CUSTOMER1, 
-				-- Get first auction price = 99%
-				CASE WHEN dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.KEK OR dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.LEK THEN CONVERT(DECIMAL(10, 2), dbo.ARTIKEL.VK3 * 0.99) ELSE VK3 END AS NET_LIST1, 
+    CONVERT(DECIMAL(10,2), dbo.ARTIKEL.KEK * 1.04 + 0.01) AS NET_LIST2, 
+	-- Get second amount = 5*MENGEV or 5*SWORDLENGTH
+	CASE WHEN dbo.artikel.p116li_swordlength IS NULL THEN CONVERT(DECIMAL(10, 0), 5 * CASE WHEN dbo.artikel.mengev IS NOT NULL THEN dbo.artikel.mengev ELSE 1 END) ELSE CONVERT(DECIMAL(10, 0), 5 * dbo.artikel.p116li_swordlength) END AS LOWER_BOUND3, 
 	
-		-- Get second amount = 2
-		CASE WHEN dbo.ARTIKEL.P116LI_SwordLength IS NULL THEN
-		CONVERT(DECIMAL(10, 0), 2 * CASE WHEN dbo.ARTIKEL.MENGEV IS NOT NULL THEN dbo.ARTIKEL.MENGEV ELSE 1 END) AS LOWER_BOUND2, 
-		ELSE
-		CONVERT(DECIMAL(10, 0), 2 * dbo.ARTIKEL.P116LI_SwordLength)
-		END
-			-- Get second price = 99.5%
-			CASE WHEN dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.KEK OR dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.LEK THEN CONVERT(DECIMAL(10, 2), dbo.ARTIKEL.VK3 * 0.995) ELSE dbo.ARTIKEL.VK3 END AS NET_CUSTOMER2, 
-				-- Get second auction price = 98.5%
-				CASE WHEN dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.KEK OR dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.LEK THEN CONVERT(DECIMAL(10, 2), dbo.ARTIKEL.VK3 * 0.985) ELSE dbo.ARTIKEL.VK3 END AS NET_LIST2, 
-	
-		-- Get third amount = 5
-		CASE WHEN dbo.ARTIKEL.P116LI_SwordLength IS NULL THEN
-		CONVERT(DECIMAL(10, 0), 5 * CASE WHEN dbo.ARTIKEL.MENGEV IS NOT NULL THEN dbo.ARTIKEL.MENGEV ELSE 1 END) AS LOWER_BOUND3, 		
-		ELSE
-		CONVERT(DECIMAL(10, 0), 5 * dbo.ARTIKEL.P116LI_SwordLength)
-		END
-			-- Get third price = 99%
-			CASE WHEN dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.KEK OR dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.LEK THEN CONVERT(DECIMAL(10, 2), dbo.ARTIKEL.VK3 * 0.99) ELSE dbo.ARTIKEL.VK3 END AS NET_CUSTOMER3, 
-				-- Get third auction price = 98%
-				CASE WHEN dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.KEK OR dbo.ARTIKEL.VK3 * 0.95 > dbo.ARTIKEL.LEK THEN CONVERT(DECIMAL(10, 2), dbo.ARTIKEL.VK3 * 0.98) ELSE dbo.ARTIKEL.VK3 END AS NET_LIST3
-							
-FROM dbo.ARTIKEL LEFT OUTER JOIN
-	dbo.LAGER ON dbo.ARTIKEL.ARTIKELNR = dbo.LAGER.ARTIKELNR 
-LEFT OUTER JOIN
-    dbo.SONDERPREIS ON dbo.ARTIKEL.ARTIKELNR = dbo.SONDERPREIS.ARTIKELNR
+    CONVERT(DECIMAL(10,2), dbo.ARTIKEL.VK3) AS NET_CUSTOMER3, 
+    
+	CONVERT(DECIMAL(10,2), dbo.ARTIKEL.KEK * 1.03) AS NET_LIST3
+FROM            
+	dbo.ARTIKEL 
+	LEFT OUTER JOIN dbo.SONDERPREIS ON dbo.ARTIKEL.ARTIKELNR = dbo.SONDERPREIS.ARTIKELNR
 WHERE        
-	-- No PV
 	(dbo.ARTIKEL.GRUPPE <> 'A001') 
-	-- Only parcel service
 	AND (dbo.ARTIKEL.NoParcelService IS NULL OR dbo.ARTIKEL.NoParcelService = 0) 
-	-- Only status 1
 	AND (dbo.ARTIKEL.STATUS = 1) 
-	-- Only products, that should be sold online
 	AND (dbo.ARTIKEL.KEININTERNET IS NULL OR dbo.ARTIKEL.KEININTERNET = 0) 
-	-- Only products with a price
 	AND (dbo.ARTIKEL.VK3 > 0) 
-	-- No products with a special price
-	AND (dbo.SONDERPREIS.PREIS IS NULL)
-	-- Only storage 1
-	AND (dbo.LAGER.LAGERNR = 1 OR dbo.LAGER.LAGERNR is null)
+	AND (dbo.SONDERPREIS.PREIS IS NULL) 
