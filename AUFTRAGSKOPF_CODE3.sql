@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 14.03.2025 09:01:42 ******/
+/****** Object:  Trigger [dbo].[AUFTRAGSKOPF_CODE3]    Script Date: 17.03.2025 14:06:28 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -34,6 +34,6 @@ BEGIN
 
 	-- If the mail was already set, don't do it again. 
 	-- Don't set if the customer has an invoice email
-	IF @CodeNeu LIKE '%@%' AND (@CodeAlt LIKE '' OR @CodeAlt is null) AND @EmailInvoice is null
+	IF @CodeNeu LIKE '%@%' AND (@CodeAlt LIKE '' OR @CodeAlt is null) AND (@EmailInvoice LIKE '' OR @EmailInvoice is null)
 			UPDATE [dbo].[AUFTRAGSKOPF] SET CODE3 = @CodeNeu WHERE BELEGNR = @Beleg
 END
