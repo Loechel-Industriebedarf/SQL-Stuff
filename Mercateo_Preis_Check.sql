@@ -1,0 +1,7 @@
+USE LOE01
+go
+
+-- Mercateo auf 105% setzen, wenn VK3 zu niedrig
+UPDATE dbo.ARTIKEL SET VK3 = KEK*1.05, KALK3 = 105, [SACHBEARBEITERNR] = 'ADMIN', AENDERUNGSDATUM = getdate() WHERE (KALKBASIS = 0 AND VK3 < LEK) OR (KALKBASIS = 2 AND VK3 < KEK)
+
+go
