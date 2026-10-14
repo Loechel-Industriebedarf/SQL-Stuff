@@ -34,6 +34,11 @@ BEGIN
 
 	IF @Auftragsart = '16' AND (@Bestellart = '' OR @Bestellart is null)
 		UPDATE [dbo].[AUFTRAGSKOPF] SET BESTELLART = 'online' WHERE BELEGNR = @Beleg
+		
+	-- TecTree/TecWerk: Wiedervorlage an Einkauf/Verkauf
+	IF @Auftragsart = '15' OR @Auftragsart = '30'	
+		INSERT INTO [LOE01].[dbo].[Termin] (BEREICH, ABTEILUNG, VONBEARBEITER, REFERENZ, TYP, VORGANG, NACHRICHT, URSPRUNGSDATUM) 
+		VALUES ('fwAuftragskopf', 1, 'ADMIN', @Beleg, 2, 'TecTree Bestellung', 'Eine neue Bestellung wurde angelegt!', GETDATE())
 
 	-- Wenn im Partner Feld ein @ übermittelt wird: In KD-Referenz schreiben
 	IF @RKontakt LIKE '%@%'
