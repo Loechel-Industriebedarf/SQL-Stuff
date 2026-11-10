@@ -1,6 +1,6 @@
 USE [LOE01]
 GO
-/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 07.10.2025 11:48:07 ******/
+/****** Object:  Trigger [dbo].[KUNDEN_INSERT]    Script Date: 10.11.2026 11:57:09 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -65,7 +65,7 @@ BEGIN
 			UPDATE[dbo].[KUNDEN] SET PRIVATKUNDE = 0 WHERE KUNDENNR = @Kundennr
 
 		/* ZUGFERD Aktivieren */
-		UPDATE [dbo].[KUNDEN] SET PDFSettingID='48654FDE-6D33-426B-B68D-DF4286C10579', PDFXMLMappingID='102', PDFVersion='3', UsePDFHandler='2' WHERE KUNDENNR = @Kundennr
+		UPDATE [dbo].[KUNDEN] SET PDFSettingID='48654FDE-6D33-426B-B68D-DF4286C10579', PDFXMLMappingID='102', PDFXMLMappingIDCreditNote = '102', PDFVersion='3', UsePDFHandler='2' WHERE KUNDENNR = @Kundennr
 
 		/* Steuern ändern */
 		/*

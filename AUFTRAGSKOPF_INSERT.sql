@@ -37,8 +37,8 @@ BEGIN
 		
 	-- TecTree/TecWerk: Wiedervorlage an Einkauf/Verkauf
 	IF @Auftragsart = '15' OR @Auftragsart = '30'	
-		INSERT INTO [LOE01].[dbo].[Termin] (BEREICH, ABTEILUNG, VONBEARBEITER, REFERENZ, TYP, VORGANG, NACHRICHT, URSPRUNGSDATUM) 
-		VALUES ('fwAuftragskopf', 1, 'ADMIN', @Beleg, 2, 'TecTree Bestellung', 'Eine neue Bestellung wurde angelegt!', GETDATE())
+		INSERT INTO [LOE01].[dbo].[Termin] (BEREICH, ABTEILUNG, VONBEARBEITER, REFERENZ, TYP, VORGANG, NACHRICHT, URSPRUNGSDATUM, Priority) 
+		VALUES ('fwAuftragskopf', 1, 'ADMIN', @Beleg, 2, 'TecTree Bestellung', 'Eine neue Bestellung wurde angelegt!', GETDATE(), 2)
 
 	-- Wenn im Partner Feld ein @ übermittelt wird: In KD-Referenz schreiben
 	IF @RKontakt LIKE '%@%'
